@@ -15,32 +15,32 @@ namespace QuestTracker.Controllers
             _context = new UserContext(configuration.GetConnectionString("DefaultConnection"));
         }
 
-        [HttpGet]
+        [HttpGet("getall")]
         public async Task<IEnumerable<User>> GetAll()
         {
             return await _context.GetAll();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("getby/{id}")]
         public async Task<User> GetById(int id)
         {
             return await _context.GetById(id);
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<int> Create(User user)
         {
             return await _context.Create(user);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("update/{id}")]
         public async Task<int> Update(int id, User user)
         {
             user.Id = id;
             return await _context.Update(user);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<int> Delete(int id)
         {
             return await _context.Delete(id);
