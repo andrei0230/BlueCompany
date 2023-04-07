@@ -37,5 +37,17 @@ namespace QuestTracker.Models
         {
             return await _db.ExecuteAsync("DELETE FROM quests WHERE id = @Id", new { Id = id });
         }
+
+        public async Task<int> AssignToUser(int  id, int userId)
+        {
+            var userExists = await _db.ExecuteScalarAsync<bool>("SELECT COUNT(*) FROM users WHERE id = @UserId", new { UserId = userId });
+
+            if (userExists)
+            {
+                return await _db.ExecuteAsync("UPDATE quests SET userId = @UserId WHERE id = @Id", new { Id = id, UserId = userId });
+            }
+
+            return 0;
+        }
     }
 }

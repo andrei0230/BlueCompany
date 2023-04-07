@@ -45,5 +45,11 @@ namespace QuestTracker.Controllers
         {
             return await _context.Delete(id);
         }
+
+        [HttpPut("{id}/{userId}")]
+        public async Task<int> AssignToUser(int id, int userId)
+        {
+            return await _context.AssignToUser(id, userId);
+        }
     }
 }
