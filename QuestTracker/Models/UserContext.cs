@@ -34,6 +34,9 @@ namespace QuestTracker.Models
             return await _db.ExecuteAsync("UPDATE users SET name = @Name, tokens = @Tokens WHERE id = @Id", user);
         }
 
-
+        public async Task<int> Delete(int id)
+        {
+            return await _db.ExecuteAsync("DELETE FROM users WHERE id = @Id", new { Id = id });
+        }
     }
 }
