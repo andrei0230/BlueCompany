@@ -49,5 +49,25 @@ namespace QuestTracker.Models
 
             return 0;
         }
-    }
+
+        public async Task<int> Complete(int id)
+        {
+            bool isCompleted = await _db.QueryFirstOrDefaultAsync<bool>("SELECT completed FROM quests WHERE id = @Id", new { Id = id });
+            bool isAssigned = await _db.ExecuteScalarAsync<bool>("SELECT userId FROM quests WHERE id = @Id", new { Id = id });
+            
+            if (isCompleted || !isAssigned)
+            {
+                return 0;
+            }
+
+            int value = await _db.QueryFirstOrDefaultAsync<int>("SELECT value FROM quests WHERE id = @Id", new { Id = id });
+            int tokens = await _db.QueryFirstOrDefaultAsync<int>("SELECT u.tokens FROM users u JOIN quests q ON u.id = q.userId WHERE q.id = @Id", new { Id = id });
+
+            tokens += value;
+
+            await _db.ExecuteAsync("UPDATE users SET tokens = @Tokens WHERE id = (SELECT userId FROM quests WHERE id = @Id) ", new { tokens = tokens, Id = id });
+
+            return await _db.ExecuteAsync("UPDATE quests SET completed = 1 WHERE id = @Id", new { Id = id });
+        }
+    } 
 }
