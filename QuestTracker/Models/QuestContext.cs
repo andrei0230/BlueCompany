@@ -32,5 +32,10 @@ namespace QuestTracker.Models
         {
             return await _db.ExecuteAsync("UPDATE quests SET title = @Title, description = @Description, value = @Value WHERE id = @Id", quest);
         }
+
+        public async Task<int> Delete(int id) 
+        {
+            return await _db.ExecuteAsync("DELETE FROM quests WHERE id = @Id", new { Id = id });
+        }
     }
 }

@@ -39,5 +39,11 @@ namespace QuestTracker.Controllers
             quest.Id = id;
             return await _context.Update(quest);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<int> Delete(int id)
+        {
+            return await _context.Delete(id);
+        }
     }
 }
