@@ -26,5 +26,11 @@ namespace QuestTracker.Controllers
         {
             return await _context.Create(user);
         }
+
+        [HttpGet("{id}")]
+        public async Task<User> GetById(int id)
+        {
+            return await _context.GetById(id);
+        }
     }
 }

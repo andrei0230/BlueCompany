@@ -23,5 +23,10 @@ namespace QuestTracker.Models
         {
             return await _db.ExecuteAsync("INSERT INTO users (name) VALUES (@Name)", user);
         }
+
+        public async Task<User> GetById(int id)
+        {
+            return await _db.QueryFirstOrDefaultAsync<User>("SELECT * FROM users WHERE id = @Id", new { Id = id });
+        }
     }
 }
