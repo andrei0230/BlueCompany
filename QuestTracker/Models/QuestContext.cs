@@ -27,5 +27,10 @@ namespace QuestTracker.Models
         {
             return await _db.ExecuteAsync("INSERT INTO quests (title, description, value) VALUE (@Title, @Description, @Value)", quest);
         }
+
+        public async Task<int> Update(Quest quest)
+        {
+            return await _db.ExecuteAsync("UPDATE quests SET title = @Title, description = @Description, value = @Value WHERE id = @Id", quest);
+        }
     }
 }

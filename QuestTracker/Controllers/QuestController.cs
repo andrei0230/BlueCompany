@@ -32,5 +32,12 @@ namespace QuestTracker.Controllers
         {
             return await _context.Create(quest);
         }
+
+        [HttpPut("{id}")]
+        public async Task<int> Update(int id, Quest quest)
+        {
+            quest.Id = id;
+            return await _context.Update(quest);
+        }
     }
 }
