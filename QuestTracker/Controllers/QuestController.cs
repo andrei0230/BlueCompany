@@ -15,6 +15,10 @@ namespace QuestTracker.Controllers
             _context = new QuestContext(configuration.GetConnectionString("DefaultConnection"));
         }
 
+        /// <summary>
+        /// Returns all quests
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("getall")]
         public async Task<IEnumerable<Quest>> GetAll()
         {

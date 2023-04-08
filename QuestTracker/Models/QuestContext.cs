@@ -12,7 +12,7 @@ namespace QuestTracker.Models
         {
             _db = new MySqlConnection(connectionString);
         }
-
+        
         public async Task<IEnumerable<Quest>> GetAll()
         {
             return await _db.QueryAsync<Quest>("SELECT * FROM quests");
@@ -25,12 +25,29 @@ namespace QuestTracker.Models
 
         public async Task<int> Create(Quest quest)
         {
-            return await _db.ExecuteAsync("INSERT INTO quests (title, description, value) VALUE (@Title, @Description, @Value)", quest);
+            var ownerExists = await _db.ExecuteScalarAsync<bool>("SELECT COUNT(*) FROM users WHERE id = @OwnerId", quest);
+
+            if (!ownerExists)
+            {
+                return 0;
+            }
+
+            int ownerTokens = await _db.QueryFirstOrDefaultAsync<int>("SELECT tokens FROM users WHERE id = @OwnerId", quest);
+
+            if(ownerTokens - quest.Value <= 0 )
+            {
+                return 0;
+            }
+            
+            ownerTokens -= quest.Value;
+            await _db.ExecuteAsync("UPDATE users SET tokens = @Tokens WHERE id = @Id", new { Tokens = ownerTokens, Id = quest.OwnerId });
+
+            return await _db.ExecuteAsync("INSERT INTO quests (ownerId, title, description, value) VALUE (@OwnerId, @Title, @Description, @Value)", quest);
         }
 
         public async Task<int> Update(Quest quest)
         {
-            return await _db.ExecuteAsync("UPDATE quests SET title = @Title, description = @Description, value = @Value WHERE id = @Id", quest);
+            return await _db.ExecuteAsync("UPDATE quests SET title = @Title, description = @Description WHERE id = @Id", quest);
         }
 
         public async Task<int> Delete(int id) 
@@ -42,12 +59,12 @@ namespace QuestTracker.Models
         {
             var userExists = await _db.ExecuteScalarAsync<bool>("SELECT COUNT(*) FROM users WHERE id = @UserId", new { UserId = userId });
 
-            if (userExists)
+            if (!userExists)
             {
-                return await _db.ExecuteAsync("UPDATE quests SET userId = @UserId WHERE id = @Id", new { Id = id, UserId = userId });
+                return 0;
             }
 
-            return 0;
+            return await _db.ExecuteAsync("UPDATE quests SET userId = @UserId WHERE id = @Id", new { Id = id, UserId = userId });
         }
 
         public async Task<int> Complete(int id)
