@@ -1,4 +1,3 @@
-
 namespace QuestTracker
 {
     public class Program
