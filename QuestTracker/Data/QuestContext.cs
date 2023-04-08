@@ -1,8 +1,9 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
+using QuestTracker.Models;
 using System.Data;
 
-namespace QuestTracker.Models
+namespace QuestTracker.Data
 {
     /// <summary>
     /// Contains methods that interact with the database.
@@ -18,7 +19,7 @@ namespace QuestTracker.Models
         {
             _db = new MySqlConnection(connectionString);
         }
-        
+
         /// <summary>
         /// Gets all Quests from the database.
         /// </summary>
@@ -50,11 +51,11 @@ namespace QuestTracker.Models
 
             int ownerTokens = await _db.QueryFirstOrDefaultAsync<int>("SELECT tokens FROM users WHERE id = @OwnerId", quest);
 
-            if(ownerTokens - quest.Value <= 0 )
+            if (ownerTokens - quest.Value <= 0)
             {
                 return 0;
             }
-            
+
             ownerTokens -= quest.Value;
             await _db.ExecuteAsync("UPDATE users SET tokens = @Tokens WHERE id = @Id", new { Tokens = ownerTokens, Id = quest.OwnerId });
 
@@ -72,7 +73,7 @@ namespace QuestTracker.Models
         /// <summary>
         /// Deletes the specified Quest.
         /// </summary>
-        public async Task<int> Delete(int id) 
+        public async Task<int> Delete(int id)
         {
             return await _db.ExecuteAsync("DELETE FROM quests WHERE id = @Id", new { Id = id });
         }
@@ -80,7 +81,7 @@ namespace QuestTracker.Models
         /// <summary>
         /// Assigns the specified Quest to the specified user.
         /// </summary>
-        public async Task<int> AssignToUser(int  id, int userId)
+        public async Task<int> AssignToUser(int id, int userId)
         {
             var userExists = await _db.ExecuteScalarAsync<bool>("SELECT COUNT(*) FROM users WHERE id = @UserId", new { UserId = userId });
 
@@ -99,7 +100,7 @@ namespace QuestTracker.Models
         {
             bool isCompleted = await _db.QueryFirstOrDefaultAsync<bool>("SELECT completed FROM quests WHERE id = @Id", new { Id = id });
             bool isAssigned = await _db.ExecuteScalarAsync<bool>("SELECT userId FROM quests WHERE id = @Id", new { Id = id });
-            
+
             if (isCompleted || !isAssigned)
             {
                 return 0;
@@ -110,9 +111,9 @@ namespace QuestTracker.Models
 
             tokens += value;
 
-            await _db.ExecuteAsync("UPDATE users SET tokens = @Tokens WHERE id = (SELECT userId FROM quests WHERE id = @Id) ", new { tokens = tokens, Id = id });
+            await _db.ExecuteAsync("UPDATE users SET tokens = @Tokens WHERE id = (SELECT userId FROM quests WHERE id = @Id) ", new { tokens, Id = id });
 
             return await _db.ExecuteAsync("UPDATE quests SET completed = 1 WHERE id = @Id", new { Id = id });
         }
-    } 
+    }
 }

@@ -1,8 +1,9 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
+using QuestTracker.Models;
 using System.Data;
 
-namespace QuestTracker.Models
+namespace QuestTracker.Data
 {
     /// <summary>
     /// Contains methods that interact with the database. 
@@ -24,7 +25,7 @@ namespace QuestTracker.Models
         /// </summary>
         public async Task<IEnumerable<User>> GetAll()
         {
-            return await _db.QueryAsync<User>("SELECT * FROM users"); 
+            return await _db.QueryAsync<User>("SELECT * FROM users");
         }
 
         /// <summary>

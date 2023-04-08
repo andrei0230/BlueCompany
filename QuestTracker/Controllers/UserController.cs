@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using QuestTracker.Data;
 using QuestTracker.Models;
 
 namespace QuestTracker.Controllers
